@@ -22,6 +22,10 @@
             margin-right: 0.2rem;
             height: 33px;
         }
+        hr{
+            margin-top:10px;
+            margin-bottom:10px;
+        }
     </style>
 
     <script>
@@ -160,61 +164,36 @@
         </div>
     </div>
     <div class="container body-content">
-        <h3>查询用户</h3>
         <div class="row">
-            <div class="col-md-8">
-                <section id="loginForm">
-                    <form class="form-horizontal" role="form">
-                        <h4>请输入ICCA登录账号</h4>
-                        <hr>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label" for="Email">账号</label>
-                            <div class="col-md-10">
-                                <input class="form-control" id="name" name="name" type="text" value="">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-2 col-md-10">
-                                <input type="button" id="search" value="查询" class="btn btn-default">
-                            </div>
-                        </div>
-                    </form>
-                </section>
+            <div class="col-md-8" style="margin-top:10px">
+                <h4>查询用户信息</h4>
+                <hr>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label class="sr-only"></label>
+                        <p class="form-control-static">账号: </p>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword2" class="sr-only"></label>
+                        <input class="form-control" id="name" name="name" type="text" value="" placeholder="请输入ICCA登录账号">
+                    </div>
+                    <input type="button" id="search" value="查询" class="btn btn-default">
+                </form>
             </div>
             <div class="col-md-4">
             </div>
         </div>
-        <hr>
-        <div class="col-md-8" id="div_sign">
-            <form class="form-horizontal" role="form">
-                <div class="form-group">
-                    <p id="p_id" style="display:none">...</p>
-                    <label class="col-md-2 control-label">姓名:</label>
-                    <div class="col-md-10">
-                        <p class="form-control-static" id="p_name"></p>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2  control-label">Ukey:</label>
-                    <div class="col-md-10">
-                        <p class="form-control-static" id="p_key"></p>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label">签章图片</label>
-                    <div class="col-md-10">
-                        <img id="img_sign" src="..." alt="签名图片">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top:10px">
-
-                    <div class="col-md-offset-2 col-md-10">
-                        <p><a href="#" id="btn_img" class="btn btn-default" role="button">提取信息</a> <a href="#" id="btn_import" class="btn btn-primary" role="button">保存</a></p>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-4">
+        <div id="div_sign">
+            <p id="p_id" style="display:none">...</p>
+            <table class="table table-hover" style="margin-top:20px">
+                <tr><th style="width:20%;" >姓名</th><th style="width:30%;">Ukey</th><th style="width:20%;">签章图片</th><th style="width:30%;">操作</th></tr>
+                <tr>
+                    <td> <p class="form-control-static" id="p_name"></p></td>
+                    <td><p class="form-control-static" id="p_key"></p></td>
+                    <td> <img id="img_sign" src="..." alt="签名图片"></td>
+                    <td>   <p><a href="#" id="btn_img" class="btn btn-default" role="button">提取信息</a> <a href="#" id="btn_import" class="btn btn-primary" role="button">保存</a></p></td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>
