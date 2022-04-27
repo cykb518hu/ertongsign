@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="Scripts/jquery-3.3.1.js"></script>
+    <script src="Scripts/bootstrap.js"></script>
+    <script src="Scripts/XTXSAB.js"></script>
+    <link href="Content/Site.css" rel="stylesheet" />
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+    <link href="Content/bootstrap-theme.css" rel="stylesheet" />
+    <style>
+        .thumbnail > img, .thumbnail a > img {
+            margin-right: inherit;
+            margin-left: inherit;
+        }
+        #div_sign .form-group {
+            margin-bottom: 0px
+        }
+        .brand-image {
+            margin-top: -0.5rem;
+            margin-right: 0.2rem;
+            height: 33px;
+        }
+    </style>
+
+    <script>
+        let initFlag = true;
+        window.onload = function () {
+            init(function () {
+                console.log("success");
+            }, function () {
+                alert("没有安装BJCA证书助手!")
+                console.log("fail");
+                initFlag = false;
+
+            });
+        }
+        let ukey = '';
+        let strPic = '';
+        jQuery(document).ready(function ($) {
+            $("#div_sign").hide();
+            $("#search").click(function () {
+                $("#div_sign").hide();
+                if (initFlag) {
+                    ukey = '';
+                    strPic = '';
+                    searchUser();
+                } else {
+                    alert("没有安装BJCA证书助手!")
+                }
+            });
+            $("#btn_img").click(function () {
+                SOF_GetUserList(call_back);      
+            });
+            $("#btn_import").click(function () {
+                if (ukey == '' || strPic == '') {
+                    alert("请先提取证书信息");
+                    return;
+                }
+                let id = $("#p_id").html();
+                $.ajax({
+                    type: "POST",
+                    url: "UpdateUser.ashx",
+                    data: { id: id, ukey: ukey, imgStr: strPic },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.code === "1") {
+                            alert("导入成功");
+                        }
+                        else {
+                            alert("导入失败!");
+                        }
+                    }
+                });
+
+            })
+
+        });
+        function call_back(data) {
+            if (!data.retVal || data.retVal.trim() == '') {
+                alert("没有获取到Ukey信息");
+            }
+            else {
+                let str = data.retVal;
+                ukey = str.split('/')[1].split('&')[0];
+                $("#p_key").html(ukey);
+                Get_Pic();
+                
+            }
+        }
+        function Get_Pic() {
+            var strContainerName = "";
+            GetPic(strContainerName, function (strRes1) { //导出图片
+                strPic = strRes1.retVal;
+                if (!strPic || strPic.trim() == '') {
+                    alert("没有获取到签名图片");
+                } else {
+                    let imgStr = 'data:image/png;base64,' + strPic;
+                    $("#img_sign").attr("src", imgStr)
+                    $("#img_sign").show();
+                }
+                
+            });
+        }
+        function searchUser() {
+            let name = $("#name").val();
+            if (!name || name.trim() == '') {
+                alert("请输入ICCA登录账号")
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "Handler.ashx",
+                    data: { name: name },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.code === "1") {
+                            $("#div_sign").show();
+                            $("#p_name").html(response.userName);
+                            $("#p_id").html(response.userId);
+                            $("#p_key").html(response.userKey);
+                            if (response.userKey && response.userKey.trim() != '') {
+                                let imgStr = 'data:image/png;base64,' + response.userImg;
+                                $("#img_sign").attr("src", imgStr);
+                                $("#img_sign").show();
+                            }
+                            else {
+                                $("#img_sign").hide();
+                            }
+                            
+                        }
+                        else {
+                            alert("没有查到相关用户信息");
+                        }
+                    }
+                });
+            }        
+        }
+    </script>
+</head>
+
+
+
+<body>
+    <div class="navbar navbar-fixed-top" style="background-color: #3c8dbc">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/" style="color:white"> <img class="brand-image" src="/Content/logo.png"> </a>
+                <a class="navbar-brand" href="/" style="color:white">重庆儿童医院-签名导入系统</a>
+            </div>
+            <div class="navbar-collapse collapse">
+
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        <h3>查询用户</h3>
+        <div class="row">
+            <div class="col-md-8">
+                <section id="loginForm">
+                    <form class="form-horizontal" role="form">
+                        <h4>请输入ICCA登录账号</h4>
+                        <hr>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="Email">账号</label>
+                            <div class="col-md-10">
+                                <input class="form-control" id="name" name="name" type="text" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="button" id="search" value="查询" class="btn btn-default">
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+        <hr>
+        <div class="col-md-8" id="div_sign">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <p id="p_id" style="display:none">...</p>
+                    <label class="col-md-2 control-label">姓名:</label>
+                    <div class="col-md-10">
+                        <p class="form-control-static" id="p_name"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2  control-label">Ukey:</label>
+                    <div class="col-md-10">
+                        <p class="form-control-static" id="p_key"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">签章图片</label>
+                    <div class="col-md-10">
+                        <img id="img_sign" src="..." alt="签名图片">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:10px">
+
+                    <div class="col-md-offset-2 col-md-10">
+                        <p><a href="#" id="btn_img" class="btn btn-default" role="button">提取信息</a> <a href="#" id="btn_import" class="btn btn-primary" role="button">保存</a></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+</body>
+</html>
